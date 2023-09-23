@@ -34,9 +34,6 @@ const mainMenu = () => {
             "Add a role",
             "Add an employee",
             "Update an employee role",
-            "Remove an Employee",
-            "Remove a department",
-            "Remove a role",
             "Exit",
         ],
       },  
@@ -64,15 +61,6 @@ const mainMenu = () => {
                     break;
                   case "Update an employee role":
                     updateRole();
-                    break;
-                  case "Remove an employee":
-                    removeEmployee();
-                    break;
-                  case "Remove a department":
-                    removeDepartment();
-                    break;
-                  case "Remove a role":
-                    removeRole();
                     break;
                   default:
                     db.end();
@@ -284,124 +272,5 @@ const addEmployee = () => {
             });
         });
     });
-  };
-//   Removing an employee
-  const removeEmployee = () => {
-    // db query to get all employees to pass to the inquirer prompt
-    db.query(`SELECT * FROM employees`, (err, rows) => {
-      if (err) {
-        console.log(err);
-      }
-      const employeeChoices = rows.map(({ id, first_name, last_name }) => ({
-        name: `${first_name} ${last_name}`,
-        id: id,
-      }));
-    });
-    // pass the employeeChoices array to the inquirer prompt to allow user to select an employee to update
-    inquirer
-      .prompt([
-        {
-          type: "choice",
-          name: "employee",
-          message: "Which employee would you like to remove?",
-          choices: employeeChoices,
-        },
-      ])
-      .then((response) => {
-        sql = `DELETE FROM employees WHERE id = ?`;
-        db.query(sql, [response.employee], (err, rows) => {
-          if (err) {
-            console.log(err);
-          }
-          console.table(rows);
-          mainMenu();
-        });
-      });
-  };
-  
-const addDepartment = () => {
-  inquirer.prompt([
-    {
-      type: "input",
-      name: "adddepartment",
-      message: "What department would you like to add?",
-
-
-    }
-  ])
-  .then((inquirerResponse) =>{
-    const departmentName = inquirerResponse.adddepartment;
-    db.query(`INSERT INTO department (name) VALUES ("${departmentName}") `, function(err, res) {
-      err? console.log(err): viewDepartments(), mainMenu()
-    })
-  }
-  )
-}
-
-
-  const removeDepartment = () => {
-    // db query to get all departments to pass to the inquirer prompt
-    db.query(`SELECT * FROM departments`, (err, rows) => {
-      if (err) {
-        console.log(err);
-      }
-      const departmentChoices = rows.map(({ id, department_name }) => ({
-        name: `${department_name}`,
-        id: id,
-      }));
-    });
-    // pass the departmentChoices array to the inquirer prompt to allow user to select a department to remove
-    inquirer
-      .prompt([
-        {
-          type: "choice",
-          name: "department",
-          message: "Which department would you like to remove?",
-          choices: departmentChoices,
-        },
-      ])
-      .then((response) => {
-        sql = `DELETE FROM departments WHERE id = ?`;
-        db.query(sql, [response.department], (err, rows) => {
-          if (err) {
-            console.log(err);
-          }
-          console.table(rows);
-          mainMenu();
-        });
-      });
-  };
-
-  const removeRole = () => {
-    // db query to get all roles to pass to the inquirer prompt
-    db.query(`SELECT * FROM role`, (err, rows) => {
-      if (err) {
-        console.log(err);
-      }
-      const roleChoices = rows.map(({ id, title }) => ({
-        name: `${title}`,
-        id: id,
-      }));
-    });
-    // pass the roleChoices array to the inquirer prompt to allow user to select a role to remove
-    inquirer
-      .prompt([
-        {
-          type: "choice",
-          name: "role",
-          message: "Which role would you like to remove?",
-          choices: roleChoices,
-        },
-      ])
-      .then((response) => {
-        sql = `DELETE FROM role WHERE id = ?`;
-        db.query(sql, [response.role], (err, rows) => {
-          if (err) {
-            console.log(err);
-          }
-          console.table(rows);
-          mainMenu();
-        });
-      });
   };
   
