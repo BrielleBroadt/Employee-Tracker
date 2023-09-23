@@ -215,62 +215,86 @@ const addEmployee = () => {
       });
     };
     // pass the employeeChoices array to the inquirer prompt to allow user to select an employee to update
-
-  const updateRole = () => {
-    // Declare employeeChoices outside the callback
-    let employeeChoices = [];
-  
-    db.query(`SELECT * FROM employees`, (err, rows) => {
-      if (err) {
-        console.log(err);
-        return; // Exit early on error
-      }
-      // Assign employeeChoices here
-      employeeChoices = rows.map(({ id, first_name, last_name }) => ({
-        name: `${first_name} ${last_name}`,
-        value: id, // Change 'id' to 'value' for inquirer
-      }));
-  
-      // Start inquirer prompt inside this callback
-      inquirer
-        .prompt([
-          {
-            type: "list", // Change type to "list"
-            name: "employee",
-            message: "Which employee's role would you like to update?",
-            choices: employeeChoices,
-          },
-        ])
-        .then((employeeResponse) => {
+    const updateRole = () => {
+      // Query the database to get a list of employees
+      const getEmployeeList = `
+        SELECT id, CONCAT(first_name, ' ', last_name) AS employee_name
+        FROM employee
+      `;
+    
+      const getRoleList = `
+        SELECT id, title
+        FROM role;
+      `;
+    
+      db.query(getEmployeeList, (err, employees) => {
+        if (err) throw err;
+    
+        db.query(getRoleList, (err, roles) => {
+          if (err) throw err;
+    
+          const employeeChoices = employees.map((employee) => ({
+            name: employee.employee_name,
+            value: employee.id,
+          }));
+    
+          const roleChoices = roles.map((role) => ({
+            name: role.title,
+            value: role.id,
+          }));
+    
           inquirer
             .prompt([
               {
-                type: "list", // Change type to "list"
+                type: "list",
+                name: "employee",
+                message: "Which employee would you like to update?",
+                choices: employeeChoices,
+              },
+              {
+                type: "list",
                 name: "role",
-                message: "What is the employee's new role?",
-                choices: [
-                  "Operations",
-                  "Clinical",
-                  "Business Development",
-                  "Tech",
-                  "Therapist",
-                  "Admissions",
-                  "Facilities Manager",
-                  "Operations Manager",
-                ],
+                message: "What role will they be assigned?",
+                choices: roleChoices,
               },
             ])
-            .then((roleResponse) => {
-              const sql = `UPDATE employees SET role_id = ? WHERE id = ?`;
-              db.query(sql, [roleResponse.role, employeeResponse.employee], (err, rows) => {
-                if (err) {
-                  console.log(err);
-                }
-                console.table(rows);
-                mainMenu();
+            .then((res) => {
+              const query = `
+                UPDATE employee SET role_id = ? WHERE id = ?
+              `;
+              db.query(query, [res.role, res.employee], (err, result) => {
+                if (err) throw err;
+                // Retrieve the selected employee's name
+                const selectedEmployee = employees.find(
+                  (employee) => employee.id === res.employee
+                );
+                // Retrieve the selected role's title
+                const selectedRole = roles.find((role) => role.id === res.role);
+                console.log(
+                  `Updated employee ${selectedEmployee.employee_name} to role ${selectedRole.title}`
+                );
+                viewEmployees();
               });
             });
         });
-    });
-  };
+      });
+    };
   
+const addDepartment = () => {
+  inquirer.prompt([
+    {
+      type: "input",
+      name: "adddepartment",
+      message: "What department would you like to add?",
+
+
+    }
+  ])
+  .then((inquirerResponse) =>{
+    const departmentName = inquirerResponse.adddepartment;
+    db.query(`INSERT INTO department (name) VALUES ("${departmentName}") `, function(err, res) {
+      err? console.log(err): viewDepartments(), mainMenu()
+    })
+  }
+  )
+}
