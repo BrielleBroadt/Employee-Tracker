@@ -21,17 +21,17 @@ Server.js was where a majority of the code was created. Code varied from switch 
 - [Questions](#questions)
 
 ## Installation
-
+none needed
 
 ## Usage
-![Screenshot 2023-09-20 124812](https://github.com/BrielleBroadt/Note-taker/assets/135186013/7de81ae2-6c63-47cf-aba7-c31bc76eea79)
+[Untitled_ Sep 27, 2023 9_08 PM.webm](https://github.com/BrielleBroadt/Employee-Tracker/assets/135186013/b039a3dc-b965-4404-9558-fed9f059218f)
 
-Notes can be netered onto the web browser and saved for later review.
+
 
 ## Contributing
 Brielle Broadt
 
-## License
-MIT
+N/A
 
 ## Repo
+https://github.com/BrielleBroadt/Employee-Tracker

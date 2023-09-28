@@ -284,6 +284,7 @@ const addEmployee = () => {
       });
     };
    
+
   
 const addDepartment = () => {
   inquirer.prompt([
